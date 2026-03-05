@@ -33,7 +33,7 @@ sbatch submit_demo.sbatch
 
 #### Option B: Run locally
 ```bash
-snakemake -s workflow/Snakefile --cores 2
+snakemake -s workflow/Snakefile2 --cores 2
 ```
 
 ## 📊 Pipeline Structure

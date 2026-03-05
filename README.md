@@ -13,7 +13,7 @@ The pipeline has been successfully tested on real demo data, proving its robustn
 
 ### 1. Clone the repository
 ```bash
-git clone https://github.com/你的用户名/metagenomics-pipeline-demo.git
+git clone https://github.com/zzzyyr123/metagenomics-pipeline-demo.git
 cd metagenomics-pipeline-demo
 ```
 

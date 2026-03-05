@@ -58,5 +58,5 @@ Containerization (Docker/Singularity)
 Contact
 Yiran Zhao
 Human Phenome Institute, Fudan University
-📧 zhaoyr21@m.fudan.edu.cn
-🌐 Personal Website
+📧 zhaoyr21@m.fudan.edu.cn; zhaoyr2023@outlook.com
+🌐 https://zzzyyr123.github.io/my_website_cv/

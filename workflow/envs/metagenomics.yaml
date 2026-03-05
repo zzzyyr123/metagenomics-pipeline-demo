@@ -1,0 +1,13 @@
+channels:
+  - bioconda
+  - conda-forge
+  - defaults
+dependencies:
+  - fastp=0.23.4
+  - metaphlan=4.0.6
+  - humann=3.8
+  - r-base
+  - r-tidyverse
+  - r-reshape2
+  - r-ggplot2
+  - r-pheatmap

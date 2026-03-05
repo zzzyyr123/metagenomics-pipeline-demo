@@ -1,0 +1,91 @@
+"""
+宏基因组分析流程 (跳过物种分类，只跑功能通路)
+Author: Yiran Zhao
+"""
+
+# 配置参数
+SAMPLE = "demo"
+THREADS = 2
+
+# 规则1：最终目标（只依赖 humann 的结果）
+rule all:
+    input:
+        "results/humann/demo_pathabundance.tsv",
+        "results/downstream/top_pathways.txt",
+        "results/downstream/alpha_diversity.txt",
+        "results/downstream/visualization.Rout"
+
+# 规则2：fastp质控
+rule fastp_qc:
+    input:
+        r1 = "data/raw/demo_1.fastq"
+    output:
+        r1_clean = "results/fastp/demo.clean.fastq",
+        html = "results/fastp/fastp_report.html"
+    threads: THREADS
+    shell:
+        """
+        fastp -i {input.r1} -o {output.r1_clean} -h {output.html} -w {threads}
+        """
+
+# 规则3：HUMAnN功能通路分析（跳过物种分类）
+rule humann:
+    input:
+        clean_reads = "results/fastp/demo.clean.fastq"
+    output:
+        pathabundance = "results/humann/demo_pathabundance.tsv",
+        genefamilies = "results/humann/demo_genefamilies.tsv",
+        pathcoverage = "results/humann/demo_pathcoverage.tsv"
+    threads: THREADS        
+    shell:
+        """
+        /public/home/Immunoprofiling/zhaoyr/mambaforge/envs/metagenomics/bin/humann \
+               --input {input.clean_reads} \
+               --output results/humann \
+               --threads {threads} \
+               --output-basename {SAMPLE} \
+               --bypass-prescreen \
+               --bypass-nucleotide-search \
+               --diamond-options "--block-size 0.5 --index-chunks 1 -b 12 -c 1" \
+               --remove-temp-output
+        """
+
+# 规则4：提取Top通路
+rule top_pathways:
+    input:
+        pathabundance = "results/humann/demo_pathabundance.tsv"
+    output:
+        "results/downstream/top_pathways.txt"
+    shell:
+        """
+        echo "Top 10 Metabolic Pathways (by abundance):" > {output}
+        echo "========================================" >> {output}
+        grep -v "^#" {input.pathabundance} | \
+        awk '{{sum = 0; for(i=2;i<=NF;i++) sum+=$i; print $1, sum}}' | \
+        sort -k2 -rn | head -10 >> {output}
+        """
+
+# 规则5：计算Alpha多样性
+rule alpha_diversity:
+    input:
+        pathabundance = "results/humann/demo_pathabundance.tsv"
+    output:
+        "results/downstream/alpha_diversity.txt"
+    shell:
+        """
+        echo "Alpha Diversity Metrics:" > {output}
+        echo "======================" >> {output}
+        grep -v "^#" {input.pathabundance} | \
+        awk '{{if(NR==1) {{for(i=2;i<=NF;i++) samples[i]=$i}} else {{for(i=2;i<=NF;i++) if($i>0) count[i]++}}}} END {{for(i=2;i<=length(samples);i++) print samples[i], count[i]}}' >> {output}
+        """
+
+# 规则6：R可视化脚本
+rule r_visualization:
+    input:
+        pathabundance = "results/humann/demo_pathabundance.tsv"
+    output:
+        "results/downstream/visualization.Rout"
+    shell:
+        """
+        Rscript scripts/visualize_results.R {input.pathabundance} > {output} 2>&1
+        """

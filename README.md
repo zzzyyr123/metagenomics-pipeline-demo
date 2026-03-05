@@ -117,7 +117,7 @@ The pipeline was successfully executed on a Slurm cluster with the following con
 ## 📬 Contact
 **Yiran Zhao**  
 Human Phenome Institute, Fudan University  
-📧 zhaoyr21@m.fudan.edu.cn  
+📧 zhaoyr21@m.fudan.edu.cn ; zhaoyr2023@outlook.com 
 🌐 [Personal Website](https://zzzyyr123.github.io/my_website_cv/)
 
 ---
